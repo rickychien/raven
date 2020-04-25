@@ -1,0 +1,73 @@
+.bubble {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: var(--icon-color);
+  animation: expand 0.4s ease-in-out;
+}
+
+@keyframes expand {
+  from {
+    opacity: 0;
+  }
+}
+
+.icon-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 135px;
+  height: 135px;
+}
+
+.icon-ripple {
+  border-radius: 50%;
+  border: 0px var(--highlight-hover-color) solid;
+  opacity: 1;
+  transition: all 0.1s ease;
+}
+
+.icon-user {
+  width: 120px;
+  height: 120px;
+  padding: 25px;
+  border-radius: 50%;
+  border: 2px var(--highlight-color) solid;
+  box-shadow: 3px 5px 5px rgba(0, 0, 0, 0.5), 4px 4px 8px rgba(0, 0, 0, 0.35);
+}
+
+.icon-user > svg {
+  width: 100%;
+}
+
+.icon-mic {
+  width: 30px;
+  height: 30px;
+  color: var(--highlight-hover-color-reverse);
+}
+
+.user-name-input {
+  max-width: 100px;
+  height: 28px;
+  color: var(--highlight-hover-color);
+  padding: 2px 5px;
+  border: 1px var(--highlight-color) solid;
+  border-radius: 6px;
+  background: none;
+  text-align: center;
+}
+
+.user-name-input[readonly] {
+  border: 0;
+}
+
+.user-name-input[readonly][data-editable] {
+  cursor: pointer;
+  background-color: var(--bg-color-light);
+}
+
+.user-name-input[readonly][data-editable]:hover {
+  color: var(--text-color);
+  background: var(--highlight-hover-color);
+}

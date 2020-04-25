@@ -1,0 +1,16 @@
+button {
+  width: 52px;
+  height: 52px;
+  padding: 6px;
+  color: var(--icon-color);
+  background-color: transparent;
+  border-radius: 50%;
+  border: 1px var(--icon-color) solid;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.14), 0 4px 8px rgba(0, 0, 0, 0.28);
+  cursor: pointer;
+  outline: none;
+}
+
+button:hover {
+  background-color: var(--highlight-hover-color-reverse);
+}

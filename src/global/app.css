@@ -1,0 +1,40 @@
+:root {
+  --bg-color: #25272d;
+  --bg-color-light: #3c3737;
+  --highlight-hover-color: #59b1cf;
+  --highlight-color: #00b0e9;
+  --highlight-hover-color-reverse: #d44c77;
+  --highlight-color-reverse: #b7315b;
+  --icon-color: #e2dede;
+  --text-color: #e2dede;
+  --text-dimmed: #7c7c7c;
+}
+
+html,
+body {
+  background: var(--bg-color);
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+input,
+button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  font: inherit;
+  background: none;
+}
+
+* {
+  font-family: 'Avenir Next', Arial;
+  box-sizing: border-box;
+  font-size: 1rem;
+}
+
+*:focus {
+  outline: none;
+}

@@ -1,0 +1,50 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.logo {
+  width: 120px;
+  color: var(--highlight-hover-color);
+}
+
+.sub-title {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text-dimmed);
+}
+
+.domain {
+  color: var(--highlight-hover-color);
+}
+
+.start-chat-form {
+  display: flex;
+  margin: 20px 0 100px 0;
+  font-weight: 500;
+}
+
+.create-room-input {
+  border: 2px var(--highlight-color) solid;
+  padding: 10px 14px;
+  border-radius: 10px 0 0 10px;
+}
+
+.join-button {
+  width: 70px;
+  color: var(--icon-color);
+  font-size: 1rem;
+  background-color: var(--highlight-color);
+  border: none;
+  border-radius: 0 10px 10px 0;
+  text-align: center;
+  padding: 11px;
+  cursor: pointer;
+}
+
+.join-button:hover {
+  background-color: var(--highlight-hover-color);
+}

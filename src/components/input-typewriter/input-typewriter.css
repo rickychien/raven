@@ -1,0 +1,12 @@
+input {
+  max-width: 100px;
+  border: none;
+  outline: none;
+  background: none;
+  font: inherit;
+  color: var(--highlight-color);
+}
+
+input::placeholder {
+  color: var(--text-dimmed);
+}

@@ -1,0 +1,24 @@
+{
+  "name": "raven",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Truly lightweight and anonymous P2P WebRTC voice call",
+  "license": "MIT",
+  "scripts": {
+    "build": "stencil build",
+    "dev": "stencil build --dev --watch --serve",
+    "test": "stencil test --spec --e2e",
+    "test.watch": "stencil test --spec --e2e --watchAll",
+    "generate": "stencil generate"
+  },
+  "dependencies": {
+    "event-emitter-es6": "^1.1.5"
+  },
+  "devDependencies": {
+    "@stencil/core": "^1.12.2",
+    "@stencil/router": "^1.0.1",
+    "@stencil/store": "^1.0.1",
+    "@types/event-emitter-es6": "^1.1.0",
+    "stencil-inline-svg": "^1.0.1"
+  }
+}
