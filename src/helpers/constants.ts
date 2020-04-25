@@ -1,4 +1,3 @@
-export const WS_HOST = location.href
-  .replace(/^http/, 'ws')
-  .replace(/\:(\d)+/, ':5001')
+//@ts-ignore
+export const WS_URL = _SIGNAL_SERVER_URL_
 export const ICE_SERVER_URLS = ['stun:s1.voipstation.jp']
