@@ -14,3 +14,7 @@ button {
 button:active {
   background-color: var(--highlight-hover-color-reverse);
 }
+
+button.off {
+  background-color: var(--highlight-hover-color-reverse);
+}

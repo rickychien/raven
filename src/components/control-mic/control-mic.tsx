@@ -18,7 +18,7 @@ export class ControlMic {
 
   render() {
     return (
-      <button class="button" onClick={this.onClick}>
+      <button class={this.on ? '' : ' off'} onClick={this.onClick}>
         <div innerHTML={this.on ? IconMicOn : IconMicOff}></div>
       </button>
     )
