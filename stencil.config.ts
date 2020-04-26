@@ -2,7 +2,14 @@ import { Config } from '@stencil/core'
 import { inlineSvg } from 'stencil-inline-svg'
 import replace from '@rollup/plugin-replace'
 
-const { SIGNAL_SERVER_URL = 'ws://localhost:5001' } = process.env
+const {
+  SIGNAL_SERVER_HOST = 'localhost:5001',
+  ICE_SERVER_URLS = ['stun:s1.voipstation.jp'],
+} = process.env
+const replaceVars = {
+  _SIGNAL_SERVER_HOST_: `"${SIGNAL_SERVER_HOST}"`,
+  _ICE_SERVER_URLS_: `"${ICE_SERVER_URLS}"`,
+}
 
 export const config: Config = {
   globalStyle: 'src/global/app.css',
@@ -16,15 +23,11 @@ export const config: Config = {
     },
   ],
   devServer: {
-    port: 5000,
     // Disable HMR since it will send extra signaling data
     reloadStrategy: 'pageReload',
     openBrowser: false,
   },
-  plugins: [
-    replace({ _SIGNAL_SERVER_URL_: `"${SIGNAL_SERVER_URL}"` }),
-    inlineSvg(),
-  ],
+  plugins: [replace(replaceVars), inlineSvg()],
   extras: {
     cssVarsShim: false,
     dynamicImportShim: false,

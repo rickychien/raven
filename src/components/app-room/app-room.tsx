@@ -2,7 +2,7 @@ import { Component, Prop, State, h } from '@stencil/core'
 import { MatchResults } from '@stencil/router'
 import { state, setUser, deleteUser } from '../../store'
 import Connector from '../../module/connector'
-import { WS_URL, ICE_SERVER_URLS } from '../../helpers/constants'
+import { SIGNAL_SERVER_URL, ICE_SERVER_URLS } from '../../helpers/constants'
 
 @Component({
   tag: 'app-room',
@@ -24,7 +24,7 @@ export class AppRoom {
 
   setupConnector = () => {
     this.connector = new Connector({
-      wsServerUrl: WS_URL,
+      wsServerUrl: SIGNAL_SERVER_URL,
       iceServerUrls: ICE_SERVER_URLS,
       retryTimeout: 3000,
     })

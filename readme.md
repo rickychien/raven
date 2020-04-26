@@ -4,10 +4,10 @@ Truly lightweight and anonymous P2P WebRTC voice call
 
 ## Develop
 
-To run dev server:
+To run the dev server:
 
 ```bash
-npm run dev
+npm start
 ```
 
 To build the app for production, run:
