@@ -2,7 +2,7 @@ import EventEmitter from 'event-emitter-es6'
 import { log } from '../helpers/utils'
 
 interface SignalingPayload {
-  uid: string
+  uid?: string
   userName?: string
   roomName?: string
   roomCreatedTime?: string
@@ -156,10 +156,12 @@ export default class Connector extends EventEmitter {
   createPeerConnection = ({
     uid,
     userName,
+    roomName,
     mute,
   }: {
     uid: string
     userName: string
+    roomName: string
     mute?: boolean
   }) => {
     if (this.peersInfo[uid]?.peerConn) {
@@ -173,7 +175,8 @@ export default class Connector extends EventEmitter {
         },
       ],
     })
-    this.peersInfo[uid] = { uid, userName, peerConn, mute }
+
+    this.peersInfo[uid] = { uid, userName, roomName, peerConn, mute }
 
     /**
      * Handle |icecandidate| events by forwarding the specified
@@ -297,10 +300,15 @@ export default class Connector extends EventEmitter {
     this.emit('user-joined', { ...user, stream: this.localStream })
   }
 
-  handlePeerJoined = ({ uid, userName, mute }: SignalingPayload) => {
+  handlePeerJoined = ({ uid, userName, roomName, mute }: SignalingPayload) => {
     log(`Peer '${userName}' (${uid}) has joined. `, { type: 'Signaling' })
 
-    const peerConn = this.createPeerConnection({ uid, userName, mute })
+    const peerConn = this.createPeerConnection({
+      uid,
+      userName,
+      roomName,
+      mute,
+    })
 
     this.localStream
       .getTracks()
@@ -328,10 +336,21 @@ export default class Connector extends EventEmitter {
    * create our RTCPeerConnection, get and attach our local stream,
    * then create and send an answer to the caller.
    */
-  handleOffer = async ({ uid, userName, offer, mute }: SignalingPayload) => {
+  handleOffer = async ({
+    uid,
+    userName,
+    roomName,
+    offer,
+    mute,
+  }: SignalingPayload) => {
     log(`Received offer from peer ${userName}' (${uid})`, { type: 'Signaling' })
 
-    const peerConn = this.createPeerConnection({ uid, userName, mute })
+    const peerConn = this.createPeerConnection({
+      uid,
+      userName,
+      roomName,
+      mute,
+    })
 
     if (peerConn.signalingState !== 'stable') {
       log(

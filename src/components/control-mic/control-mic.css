@@ -11,6 +11,6 @@ button {
   outline: none;
 }
 
-button:hover {
+button:active {
   background-color: var(--highlight-hover-color-reverse);
 }

@@ -71,7 +71,7 @@ export class AppRoom {
     // Store user info for next time visit
     localStorage.setItem(this.roomName, userName)
     setUser(this.uid, { userName })
-    this.connector.sendUserUpdate({ uid: this.uid, userName })
+    this.connector.sendUserUpdate({ userName })
   }
 
   onVolumeOnChange = ({ detail: on }: CustomEvent) => {
@@ -84,7 +84,7 @@ export class AppRoom {
   onMicOnChange = ({ detail: on }: CustomEvent) => {
     state.users.get(this.uid).stream.getAudioTracks()[0].enabled = on
     setUser(this.uid, { mute: !on })
-    this.connector.sendUserUpdate({ uid: this.uid, mute: !on })
+    this.connector.sendUserUpdate({ mute: !on })
   }
 
   render() {
@@ -99,7 +99,9 @@ export class AppRoom {
           <room-timer startTime={this.startTime} />
         </div>
         <div class="room">
-          <div class="room-loading"></div>
+          <div class="room-loading">
+            <div class="loading-animate"></div>
+          </div>
           {userBubbles.map((user, idx) => (
             <user-bubble
               userName={user.userName}
