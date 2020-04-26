@@ -99,6 +99,7 @@ export class AppRoom {
           <room-timer startTime={this.startTime} />
         </div>
         <div class="room">
+          <div class="room-loading"></div>
           {userBubbles.map((user, idx) => (
             <user-bubble
               userName={user.userName}

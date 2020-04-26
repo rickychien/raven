@@ -44,13 +44,41 @@
   overflow-x: auto;
 }
 
-.loading:only-child {
-  border: 16px solid #f3f3f3;
-  border-top: 16px solid #3498db;
+.room-loading:only-child {
+  position: relative;
+  height: 20vw;
+  width: 20vw;
+  border: 3px solid transparent;
+  border-top-color: #3498db;
+  border-bottom-color: #3498db;
   border-radius: 50%;
-  width: 120px;
-  height: 120px;
   animation: spin 2s linear infinite;
+}
+
+.room-loading:only-child::before {
+  content: '';
+  position: absolute;
+  top: 2%;
+  bottom: 2%;
+  left: 2%;
+  right: 2%;
+  border: 3px solid transparent;
+  border-top-color: #db213a;
+  border-radius: 50%;
+  animation: spin 3s linear infinite;
+}
+
+.room-loading:only-child::after {
+  content: '';
+  position: absolute;
+  top: 5%;
+  bottom: 5%;
+  left: 5%;
+  right: 5%;
+  border: 3px solid transparent;
+  border-top-color: #dec52d;
+  border-radius: 50%;
+  animation: spin 1.5s linear infinite;
 }
 
 @keyframes spin {
