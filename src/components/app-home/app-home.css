@@ -14,9 +14,9 @@
 .sub-title {
   font-size: 1.2rem;
   font-weight: 500;
-  color: var(--text-dimmed);
+  color: var(--text-color);
   text-align: center;
-  margin: 20px;
+  margin: 40px 0;
 }
 
 .domain {
@@ -54,10 +54,12 @@
 @media only screen and (max-width: 667px) {
   .sub-title {
     font-size: 1rem;
+    margin: 30px 0;
   }
 
   .start-chat-form {
     flex-direction: column;
+    margin-bottom: 35px;
   }
 
   .create-room-input {
