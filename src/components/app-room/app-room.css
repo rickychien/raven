@@ -37,7 +37,7 @@
 .room {
   display: flex;
   flex-flow: row wrap;
-  justify-content: space-evenly;
+  justify-content: center;
   align-items: center;
   flex: 1;
   width: 94%;
