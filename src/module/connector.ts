@@ -2,7 +2,7 @@ import EventEmitter from 'event-emitter-es6'
 import { log } from '../helpers/utils'
 
 interface SignalingPayload {
-  uid?: string
+  uid: string
   userName?: string
   roomName?: string
   roomCreatedTime?: string

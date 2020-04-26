@@ -71,7 +71,7 @@ export class AppRoom {
     // Store user info for next time visit
     localStorage.setItem(this.roomName, userName)
     setUser(this.uid, { userName })
-    this.connector.sendUserUpdate({ userName })
+    this.connector.sendUserUpdate({ uid: this.uid, userName })
   }
 
   onVolumeOnChange = ({ detail: on }: CustomEvent) => {
@@ -84,7 +84,7 @@ export class AppRoom {
   onMicOnChange = ({ detail: on }: CustomEvent) => {
     state.users.get(this.uid).stream.getAudioTracks()[0].enabled = on
     setUser(this.uid, { mute: !on })
-    this.connector.sendUserUpdate({ mute: !on })
+    this.connector.sendUserUpdate({ uid: this.uid, mute: !on })
   }
 
   render() {

@@ -46,8 +46,8 @@
 
 .room-loading:only-child {
   position: relative;
-  height: 20vw;
-  width: 20vw;
+  height: 120px;
+  width: 120px;
   border: 3px solid transparent;
   border-top-color: #3498db;
   border-bottom-color: #3498db;
