@@ -8,7 +8,7 @@ const {
 } = process.env
 const replaceVars = {
   _SIGNAL_SERVER_HOST_: `"${SIGNAL_SERVER_HOST}"`,
-  _ICE_SERVER_URLS_: `"${ICE_SERVER_URLS}"`,
+  _ICE_SERVER_URLS_: `${ICE_SERVER_URLS}`,
 }
 
 export const config: Config = {
