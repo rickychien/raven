@@ -89,8 +89,7 @@ export class UserBubble {
   render() {
     const rippleStyle = {
       borderWidth: `${this.audioVolume * 3}px`,
-      borderColor:
-        this.audioVolume > 0 ? '#33b9e473' : 'var(--highlight-hover-color)',
+      borderColor: this.audioVolume > 0 ? '#33b9e473' : 'var(--secondary-line)',
     }
 
     return (

@@ -1,9 +1,9 @@
 :host {
   height: 26px;
-  color: var(--highlight-color);
+  color: var(--primary-line);
   text-align: center;
   font-weight: 500;
-  background-color: var(--bg-color-light);
+  background-color: var(--secondary-fill);
   padding: 2px 10px;
   border-radius: 6px;
 }

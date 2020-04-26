@@ -11,23 +11,27 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0"
     />
-    <meta name="theme-color" content="#16161d" />
+
+    <!-- General -->
+    <link rel="icon" type="image/x-icon" href="/assets/icon/icon.png" />
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    <!-- Android -->
+    <meta name="theme-color" content="#0c0d0f" />
+    <!-- iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta
       name="apple-mobile-web-app-status-bar-style"
       content="black-translucent"
     />
+    <link rel="apple-touch-icon" href="/assets/icon/icon.png" />
+    <link rel="apple-touch-startup-image" href="/assets/icon/icon.png" />
 
+    <!-- Main script import -->
     <script type="module" src="/build/app.esm.js"></script>
     <script nomodule src="/build/app.js"></script>
     <link href="/build/app.css" rel="stylesheet" />
-
-    <link rel="icon" type="image/x-icon" href="/assets/icon/favicon.ico" />
-    <link rel="apple-touch-icon" href="/assets/icon/icon.png" />
-    <link rel="apple-touch-startup-image" href="/assets/icon/icon.png" />
-    <link rel="manifest" href="/manifest.json" />
   </head>
-
   <body>
     <app-root></app-root>
   </body>
