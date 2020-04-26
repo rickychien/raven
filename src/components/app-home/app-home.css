@@ -12,9 +12,11 @@
 }
 
 .sub-title {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   font-weight: 500;
   color: var(--text-dimmed);
+  text-align: center;
+  margin: 20px;
 }
 
 .domain {
@@ -23,8 +25,8 @@
 
 .start-chat-form {
   display: flex;
-  margin: 20px 0 100px 0;
   font-weight: 500;
+  margin-bottom: 18px;
 }
 
 .create-room-input {
@@ -47,4 +49,23 @@
 
 .join-button:hover {
   background-color: var(--highlight-hover-color);
+}
+
+@media only screen and (max-width: 667px) {
+  .sub-title {
+    font-size: 1rem;
+  }
+
+  .start-chat-form {
+    flex-direction: column;
+  }
+
+  .create-room-input {
+    border-radius: 10px 10px 0 0;
+  }
+
+  .join-button {
+    width: 100%;
+    border-radius: 0 0 10px 10px;
+  }
 }

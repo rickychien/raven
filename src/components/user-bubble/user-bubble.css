@@ -41,7 +41,13 @@
   width: 100%;
 }
 
-.icon-mic {
+.icon-mic-on {
+  width: 30px;
+  height: 30px;
+  color: var(--highlight-color-green);
+}
+
+.icon-mic-off {
   width: 30px;
   height: 30px;
   color: var(--highlight-hover-color-reverse);
