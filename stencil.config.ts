@@ -4,11 +4,15 @@ import replace from '@rollup/plugin-replace'
 
 const {
   SIGNAL_SERVER_HOST = 'localhost:5001',
-  ICE_SERVER_URLS = `['stun:s1.voipstation.jp']`,
+  ICE_SERVER_URL_1 = 'stun.l.google.com:19302',
+  ICE_SERVER_URL_2 = '',
+  ICE_SERVER_URL_3 = '',
 } = process.env
 const replaceVars = {
   _SIGNAL_SERVER_HOST_: `"${SIGNAL_SERVER_HOST}"`,
-  _ICE_SERVER_URLS_: `${ICE_SERVER_URLS}`,
+  _ICE_SERVER_URL_1_: `"${ICE_SERVER_URL_1}"`,
+  _ICE_SERVER_URL_2_: `"${ICE_SERVER_URL_2}"`,
+  _ICE_SERVER_URL_3_: `"${ICE_SERVER_URL_3}"`,
 }
 
 export const config: Config = {
