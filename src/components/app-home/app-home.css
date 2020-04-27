@@ -8,38 +8,38 @@
 
 .logo {
   width: 120px;
-  color: var(--highlight-hover-color);
+  color: var(--secondary-line);
 }
 
 .sub-title {
   font-size: 1.2rem;
   font-weight: 500;
-  color: var(--text-color);
+  color: var(--primary-stroke);
   text-align: center;
   margin: 40px 0;
 }
 
 .domain {
-  color: var(--highlight-hover-color);
+  color: var(--secondary-line);
 }
 
 .start-chat-form {
   display: flex;
   font-weight: 500;
-  margin-bottom: 18px;
+  margin-bottom: 50px;
 }
 
 .create-room-input {
-  border: 2px var(--highlight-color) solid;
+  border: 2px var(--primary-line) solid;
   padding: 10px 14px;
   border-radius: 10px 0 0 10px;
 }
 
 .join-button {
   width: 70px;
-  color: var(--icon-color);
+  color: var(--primary-stroke);
   font-size: 1rem;
-  background-color: var(--highlight-color);
+  background-color: var(--primary-line);
   border: none;
   border-radius: 0 10px 10px 0;
   text-align: center;
@@ -48,7 +48,7 @@
 }
 
 .join-button:hover {
-  background-color: var(--highlight-hover-color);
+  background-color: var(--secondary-line);
 }
 
 @media only screen and (max-width: 667px) {

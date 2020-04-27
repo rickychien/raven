@@ -88,15 +88,16 @@ export class UserBubble {
 
   render() {
     const rippleStyle = {
-      borderWidth: `${this.audioVolume * 3}px`,
-      borderColor:
-        this.audioVolume > 0 ? '#33b9e473' : 'var(--highlight-hover-color)',
+      // borderWidth: `${this.audioVolume * 3}px`,
     }
 
     return (
       <div class="bubble">
         <div class="icon-wrapper">
-          <div class="icon-ripple" style={rippleStyle}>
+          <div
+            class={this.audioVolume > 2 ? 'icon-ripple' : ''}
+            style={rippleStyle}
+          >
             <div class="icon-user" innerHTML={IconUser}></div>
           </div>
         </div>

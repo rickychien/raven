@@ -4,9 +4,9 @@ input {
   outline: none;
   background: none;
   font: inherit;
-  color: var(--highlight-color);
+  color: var(--primary-line);
 }
 
 input::placeholder {
-  color: var(--text-dimmed);
+  color: var(--secondary-stroke);
 }
