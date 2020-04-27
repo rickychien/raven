@@ -13,6 +13,12 @@ interface SignalingPayload {
 }
 
 /**
+ * Send heart-beat ping message to signaling server to keep it alive
+ * Note: Heroku dyno server will close any open connection after 1 minute.
+ **/
+const HEARTBEAT_DURATION = 50 * 1000 // 50s
+
+/**
  * This module handles all peer's connections from signaling server and establishing
  * P2P RTC connections to the end clients.
  * Multiple clients are able to be handled.
@@ -25,6 +31,7 @@ export default class Connector extends EventEmitter {
   ws: WebSocket = null
   wsServerUrl: string
   reconnectTimeoutId: number = 0
+  heartbeatIntervalId: number = 0
   iceServerUrls: string[] = []
   retryTimeout: number = 1000
   localStream: MediaStream
@@ -62,6 +69,10 @@ export default class Connector extends EventEmitter {
         log('Signaling server connection is succeeded.', { type: 'Websocket' })
         this.emit('signaling-server-connected')
         this.ws.removeEventListener('open', onopen)
+        window.clearInterval(this.heartbeatIntervalId)
+        this.heartbeatIntervalId = window.setInterval(() => {
+          this.sendToSignalingServer({ type: 'heartbeat', payload: {} })
+        }, HEARTBEAT_DURATION)
       }.bind(this)
     )
 
