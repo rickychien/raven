@@ -93,24 +93,25 @@
 .user-name-input {
   max-width: 100px;
   height: 28px;
-  color: var(--secondary-line);
   padding: 2px 5px;
-  border: 1px solid var(--primary-line);
+  color: var(--secondary-line);
+  background-color: var(--secondary-fill);
   border-radius: 6px;
-  background: none;
   text-align: center;
+  cursor: pointer;
+}
+
+.user-name-input:active {
+  color: var(--primary-stroke);
+  background: var(--secondary-line);
+}
+
+.user-name-input:focus {
+  border: 1px solid var(--primary-line);
 }
 
 .user-name-input[readonly] {
+  background: none;
   border: 0;
-}
-
-.user-name-input[readonly][data-editable] {
-  cursor: pointer;
-  background-color: var(--secondary-fill);
-}
-
-.user-name-input[readonly][data-editable]:hover {
-  color: var(--primary-stroke);
-  background: var(--secondary-line);
+  cursor: default;
 }

@@ -22,31 +22,15 @@ export class UserBubble {
   @Prop() isNameEditable: boolean = false
   @Prop() isPlayAudioStream: boolean = false
   @Prop() isMute: boolean = false
-  @State() isNameEdit: boolean = false
   @State() audioVolume: number = 0
   @Event() userNameChange: EventEmitter
   audioElm!: HTMLAudioElement
   audioContext: AudioContext
   meter: any
 
-  onEditUserName = () => {
-    if (!this.isNameEditable) return
-    this.isNameEdit = true
-  }
-
-  onInputBlur = () => {
-    this.isNameEdit = false
-  }
-
   onInputChange = (evt: InputEvent) => {
     this.userName = (evt.target as HTMLInputElement).value
     this.userNameChange.emit(this.userName)
-  }
-
-  onInputKeyPress = (evt: KeyboardEvent) => {
-    if (evt.key === 'Enter') {
-      this.isNameEdit = false
-    }
   }
 
   componentDidLoad() {
@@ -107,13 +91,9 @@ export class UserBubble {
         ></div>
         <input
           class="user-name-input"
-          readonly={!this.isNameEdit}
-          data-editable={this.isNameEditable}
+          readOnly={!this.isNameEditable}
           maxlength="12"
           value={this.userName}
-          onClick={this.onEditUserName}
-          onBlur={this.onInputBlur}
-          onKeyPress={this.onInputKeyPress}
           onChange={this.onInputChange}
         />
         {this.isPlayAudioStream && (
