@@ -152,7 +152,17 @@ export default class Connector extends EventEmitter {
   }
 
   sendToSignalingServer = (data) => {
-    this.ws.send(JSON.stringify(data))
+    if (this.ws.readyState === this.ws.OPEN) {
+      this.ws.send(JSON.stringify(data))
+    } else {
+      this.ws.addEventListener(
+        'open',
+        function sendData() {
+          this.ws.send(JSON.stringify(data))
+          this.ws.removeEventListener('open', sendData)
+        }.bind(this)
+      )
+    }
   }
 
   createPeerConnection = ({
