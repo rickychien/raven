@@ -63,6 +63,7 @@ export class AppRoom {
     })
 
     this.connector.on('peer-connection-failed', (peer: User) => {
+      peer.peerConn?.close()
       deleteUser(peer.uid)
     })
   }

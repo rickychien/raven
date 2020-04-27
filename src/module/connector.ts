@@ -24,6 +24,7 @@ interface SignalingPayload {
 export default class Connector extends EventEmitter {
   ws: WebSocket = null
   wsServerUrl: string
+  reconnectTimeoutId: number = 0
   iceServerUrls: string[] = []
   retryTimeout: number = 1000
   localStream: MediaStream
@@ -51,6 +52,8 @@ export default class Connector extends EventEmitter {
   }
 
   connect = () => {
+    this.reconnectTimeoutId = 0
+
     this.ws = new WebSocket(this.wsServerUrl)
 
     this.ws.addEventListener(
@@ -65,21 +68,17 @@ export default class Connector extends EventEmitter {
     this.ws.addEventListener(
       'close',
       function onclose() {
-        log('Signaling server connection is closed, try reconnecting...', {
+        log('Signaling server connection is closed, reconnect...', {
           type: 'Websocket',
         })
-        setTimeout(this.connect, this.retryTimeout)
         this.emit('signaling-server-failed')
         this.ws.removeEventListener('close', onclose)
-      }.bind(this)
-    )
-
-    this.ws.addEventListener(
-      'error',
-      function onerror() {
-        log('Signaling server connection is failed', { type: 'Websocket' })
-        this.ws.close()
-        this.ws.removeEventListener('error', onerror)
+        if (!this.reconnectTimeoutId) {
+          this.reconnectTimeoutId = window.setTimeout(
+            this.connect,
+            this.retryTimeout
+          )
+        }
       }.bind(this)
     )
 
