@@ -103,12 +103,12 @@ export class AppRoom {
           <div class="room-loading">
             <div class="loading-animate"></div>
           </div>
-          {userBubbles.map((user, idx) => (
+          {userBubbles.map((user) => (
             <user-bubble
               userName={user.userName}
               stream={user.stream}
-              isNameEditable={idx === 0}
-              isPlayAudioStream={idx !== 0}
+              isNameEditable={this.uid === user.uid}
+              isPlayAudioStream={this.uid !== user.uid}
               isMute={user.mute}
               onUserNameChange={this.onUserNameChange}
             />
