@@ -4,8 +4,8 @@ import replace from '@rollup/plugin-replace'
 
 const {
   SIGNAL_SERVER_HOST = 'localhost:5001',
-  ICE_SERVER_URL_1 = 'stun.l.google.com:19302',
-  ICE_SERVER_URL_2 = '',
+  ICE_SERVER_URL_1 = 'stun:stun.l.google.com:19302',
+  ICE_SERVER_URL_2 = 'stun:s1.taraba.net',
   ICE_SERVER_URL_3 = '',
 } = process.env
 const replaceVars = {

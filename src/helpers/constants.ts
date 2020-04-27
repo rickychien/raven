@@ -4,4 +4,4 @@ export const ICE_SERVER_URLS = [
   _ICE_SERVER_URL_1_,
   _ICE_SERVER_URL_2_,
   _ICE_SERVER_URL_3_,
-]
+].filter((url) => url)
