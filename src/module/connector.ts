@@ -166,10 +166,6 @@ export default class Connector extends EventEmitter {
     roomName: string
     mute?: boolean
   }) => {
-    if (this.peersInfo[uid]?.peerConn) {
-      return this.peersInfo[uid].peerConn
-    }
-
     const peerConn = new RTCPeerConnection({
       iceServers: [
         {
@@ -305,6 +301,12 @@ export default class Connector extends EventEmitter {
   handlePeerJoined = ({ uid, userName, roomName, mute }: SignalingPayload) => {
     log(`Peer '${userName}' (${uid}) has joined. `, { type: 'Signaling' })
 
+    // If signaling server reconnection happends, WebRTC peer connection might be
+    // still connected. We can skip the peer connection negotiation.
+    if (this.peersInfo[uid]?.peerConn) {
+      return
+    }
+
     const peerConn = this.createPeerConnection({
       uid,
       userName,
@@ -346,6 +348,12 @@ export default class Connector extends EventEmitter {
     mute,
   }: SignalingPayload) => {
     log(`Received offer from peer ${userName}' (${uid})`, { type: 'Signaling' })
+
+    // If signaling server reconnection happends, WebRTC peer connection might be
+    // still connected. We can skip the peer connection negotiation.
+    if (this.peersInfo[uid]?.peerConn) {
+      return
+    }
 
     const peerConn = this.createPeerConnection({
       uid,
