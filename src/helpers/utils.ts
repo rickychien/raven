@@ -29,9 +29,15 @@ interface RoomPref {
 }
 
 export function getRoomPref(roomName: string): RoomPref {
-  return (
-    JSON.parse(window.localStorage.getItem(roomName)) || { userName: 'Guest' }
-  )
+  const defaultPref = { userName: 'Guest' }
+
+  try {
+    return JSON.parse(window.localStorage.getItem(roomName)) || defaultPref
+  } catch (err) {
+    // Reset room pref since failure might cause by localStorage format upgrade
+    window.localStorage.removeItem(roomName)
+  }
+  return defaultPref
 }
 
 export function setRoomPref(roomName: string, preference: RoomPref) {
