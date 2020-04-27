@@ -122,10 +122,12 @@ export default class Connector extends EventEmitter {
   }
 
   joinRoom({
+    uid,
     userName,
     roomName,
     stream,
   }: {
+    uid: string
     userName: string
     roomName: string
     stream: MediaStream
@@ -134,6 +136,7 @@ export default class Connector extends EventEmitter {
     this.sendToSignalingServer({
       type: 'join',
       payload: {
+        uid,
         userName,
         roomName,
         mute: !stream.getAudioTracks()[0].enabled,

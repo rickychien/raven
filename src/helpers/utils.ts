@@ -22,3 +22,19 @@ export function log(msg: string, { type = 'Signaling' }: Option) {
     msg
   )
 }
+
+interface RoomPref {
+  uid?: string
+  userName?: string
+}
+
+export function getRoomPref(roomName: string): RoomPref {
+  return (
+    JSON.parse(window.localStorage.getItem(roomName)) || { userName: 'Guest' }
+  )
+}
+
+export function setRoomPref(roomName: string, preference: RoomPref) {
+  const newPreference = { ...getRoomPref(roomName), ...preference }
+  window.localStorage.setItem(roomName, JSON.stringify(newPreference))
+}

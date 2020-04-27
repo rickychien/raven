@@ -3,6 +3,7 @@ import { MatchResults } from '@stencil/router'
 import { state, setUser, deleteUser } from '../../store'
 import Connector from '../../module/connector'
 import { SIGNAL_SERVER_URL, ICE_SERVER_URLS } from '../../helpers/constants'
+import { getRoomPref, setRoomPref } from '../../helpers/utils'
 
 @Component({
   tag: 'app-room',
@@ -13,40 +14,44 @@ export class AppRoom {
   @State() elapsed: string = '0:00'
   @State() isConnected: boolean = false
   @State() startTime: number = 0
-  uid: string
   roomName: string = this.match.params.roomName
-  userName: string = localStorage.getItem(this.roomName) || 'Guest'
+  uid: string = getRoomPref(this.roomName).uid
+  userName: string = getRoomPref(this.roomName).userName
+  stream: MediaStream
   connector: Connector
 
   componentWillLoad = () => {
     this.setupConnector()
   }
 
-  setupConnector = () => {
+  setupConnector = async () => {
+    this.stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+
     this.connector = new Connector({
       wsServerUrl: SIGNAL_SERVER_URL,
       iceServerUrls: ICE_SERVER_URLS,
       retryTimeout: 3000,
     })
 
-    this.connector.on('signaling-server-connected', async () => {
+    this.connector.on('signaling-server-connected', () => {
       this.isConnected = true
       this.connector.joinRoom({
+        uid: this.uid,
         userName: this.userName,
         roomName: this.roomName,
-        stream: await navigator.mediaDevices.getUserMedia({ audio: true }),
+        stream: this.stream,
       })
     })
 
     this.connector.on('signaling-server-failed', () => {
       this.isConnected = false
-      deleteUser(this.uid)
     })
 
     this.connector.on('user-joined', (user: User) => {
       this.uid = user.uid
       this.startTime = new Date(user.roomCreatedTime).getTime()
       setUser(user.uid, user)
+      setRoomPref(this.roomName, { uid: user.uid, userName: user.userName })
     })
 
     this.connector.on('peer-joined', (peer: User) => {
@@ -70,7 +75,7 @@ export class AppRoom {
 
   onUserNameChange = ({ detail: userName }: CustomEvent) => {
     // Store user info for next time visit
-    localStorage.setItem(this.roomName, userName)
+    setRoomPref(this.roomName, { userName })
     setUser(this.uid, { userName })
     this.connector.sendUserUpdate({ userName })
   }
