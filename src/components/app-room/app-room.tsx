@@ -111,9 +111,8 @@ export class AppRoom {
           {userBubbles.map((user) => (
             <user-bubble
               userName={user.userName}
-              stream={user.stream}
+              stream={this.uid === user.uid ? null : user.stream}
               isNameEditable={this.uid === user.uid}
-              isPlayAudioStream={this.uid !== user.uid}
               isMute={user.mute}
               onUserNameChange={this.onUserNameChange}
             />
