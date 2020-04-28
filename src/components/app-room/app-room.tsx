@@ -68,8 +68,8 @@ export class AppRoom {
     })
 
     this.connector.on('peer-connection-failed', (peer: User) => {
-      peer.peerConn?.close()
-      deleteUser(peer.uid)
+      // Trigger a re-render for new peer connection status
+      setUser(peer.uid, peer)
     })
   }
 
@@ -99,9 +99,8 @@ export class AppRoom {
     return (
       <div class="main">
         <div class="header">
-          <h2 class="room-name">
-            {this.roomName} ({userBubbles.length})
-          </h2>
+          <h2 class="room-name">{this.roomName}</h2>
+          <h2 class="room-user-count">({userBubbles.length})</h2>
           <room-timer startTime={this.startTime} />
         </div>
         <div class="room">
@@ -110,6 +109,11 @@ export class AppRoom {
           </div>
           {userBubbles.map((user) => (
             <user-bubble
+              class={
+                user.peerConn?.iceConnectionState === 'failed'
+                  ? 'peer-disconnected'
+                  : ''
+              }
               userName={user.userName}
               stream={this.uid === user.uid ? null : user.stream}
               isNameEditable={this.uid === user.uid}

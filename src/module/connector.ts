@@ -214,16 +214,8 @@ export default class Connector extends EventEmitter {
       }
     })
 
-    /**
-     * Called by the WebRTC layer to let us know when it's time to
-     * begin, resume, or restart ICE negotiation.
-     */
-    peerConn.addEventListener('negotiationneeded', async () => {
-      log(`|negotiationneeded| start with peer '${userName}' (${uid}).`, {
-        type: 'WebRTC',
-      })
-
-      const offer = await peerConn.createOffer()
+    const negotiateICECandidate = async ({ iceRestart }) => {
+      const offer = await peerConn.createOffer({ iceRestart })
 
       // If the connection hasn't yet achieved the "stable" state,
       // return to the caller. Another negotiationneeded event
@@ -248,47 +240,33 @@ export default class Connector extends EventEmitter {
           offer,
         },
       })
+    }
+
+    /**
+     * Called by the WebRTC layer to let us know when it's time to
+     * begin, resume, or restart ICE negotiation.
+     */
+    peerConn.addEventListener('negotiationneeded', () => {
+      log(`|negotiationneeded| start with peer '${userName}' (${uid}).`, {
+        type: 'WebRTC',
+      })
+
+      negotiateICECandidate({ iceRestart: false })
     })
 
     /**
-     * Handle |iceconnectionstatechange| events. This will detect
-     * when the ICE connection is closed, failed, or disconnected.
-     * This is called when the state of the ICE agent changes.
+     * Handle |iceconnectionstatechange| events.
+     * We will restart ICE candidate connection if it's failed.
      */
     peerConn.addEventListener('iceconnectionstatechange', () => {
       switch (peerConn.iceConnectionState) {
-        case 'closed':
         case 'failed':
-        case 'disconnected':
           log(
-            `|iceconnectionstatechange| detects iceConnectionState is (${peerConn.iceConnectionState}) with peer '${userName}' (${uid}).`,
+            `|iceconnectionstatechange| detects iceConnectionState is "failed" with peer '${userName}' (${uid}).`,
             { type: 'WebRTC' }
           )
-          if (this.peersInfo[uid]) {
-            this.peersInfo[uid].peerConn.close()
-            this.emit('peer-connection-failed', this.peersInfo[uid])
-            delete this.peersInfo[uid]
-          }
-          break
-      }
-    })
-
-    /**
-     * Set up a |signalingstatechange| event handler. This will detect when
-     * the signaling connection is closed.
-     */
-    peerConn.addEventListener('signalingstatechange', () => {
-      switch (peerConn.iceConnectionState) {
-        case 'closed':
-          log(
-            `|signalingstatechange| detects iceConnectionState is (${peerConn.iceConnectionState}) with peer '${userName}' (${uid}).`,
-            { type: 'WebRTC' }
-          )
-          if (this.peersInfo[uid]) {
-            this.peersInfo[uid].peerConn.close()
-            this.emit('peer-connection-failed', this.peersInfo[uid])
-            delete this.peersInfo[uid]
-          }
+          this.emit('peer-connection-failed', this.peersInfo[uid])
+          negotiateICECandidate({ iceRestart: true })
           break
       }
     })
@@ -324,7 +302,7 @@ export default class Connector extends EventEmitter {
 
     // If signaling server reconnection happends, WebRTC peer connection might be
     // still connected. We can skip the peer connection negotiation.
-    if (this.peersInfo[uid]?.peerConn) {
+    if (this.peersInfo[uid]?.peerConn?.iceConnectionState === 'connected') {
       return
     }
 
@@ -372,7 +350,7 @@ export default class Connector extends EventEmitter {
 
     // If signaling server reconnection happends, WebRTC peer connection might be
     // still connected. We can skip the peer connection negotiation.
-    if (this.peersInfo[uid]?.peerConn) {
+    if (this.peersInfo[uid]?.peerConn?.iceConnectionState === 'connected') {
       return
     }
 
@@ -416,6 +394,7 @@ export default class Connector extends EventEmitter {
     log(`Received answer from peer '${userName}' (${uid})`, {
       type: 'Signaling',
     })
+
     this.peersInfo[uid].peerConn.setRemoteDescription(answer)
   }
 
