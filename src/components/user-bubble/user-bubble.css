@@ -14,17 +14,10 @@
   }
 }
 
-.icon-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 135px;
-  height: 135px;
-}
-
 .icon-user {
   width: 120px;
   height: 120px;
+  margin: 10px 0;
   padding: 25px;
   border-radius: 50%;
   border: 2px solid var(--primary-line);

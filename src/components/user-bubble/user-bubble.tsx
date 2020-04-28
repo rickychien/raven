@@ -23,14 +23,21 @@ export class UserBubble {
   @State() audioVolume: number = 0
   @Event() userNameChange: EventEmitter
   audioElm!: HTMLAudioElement
+  inputElm!: HTMLInputElement
+
+  componentDidLoad() {
+    this.handleStreamChange()
+  }
 
   onInputChange = (evt: InputEvent) => {
     this.userName = (evt.target as HTMLInputElement).value
     this.userNameChange.emit(this.userName)
   }
 
-  componentDidLoad() {
-    this.handleStreamChange()
+  onInputKeyPress = (evt: KeyboardEvent) => {
+    if (evt.key === 'Enter') {
+      this.inputElm.blur()
+    }
   }
 
   @Watch('stream')
@@ -43,19 +50,19 @@ export class UserBubble {
   render() {
     return (
       <div class="bubble">
-        <div class="icon-wrapper">
-          <div class="icon-user" innerHTML={IconUser}></div>
-        </div>
+        <div class="icon-user" innerHTML={IconUser}></div>
         <div
           class={this.isMute ? 'icon-mic-off' : 'icon-mic-on'}
           innerHTML={this.isMute ? IconMicOff : IconMicOn}
         ></div>
         <input
+          ref={(elm) => (this.inputElm = elm)}
           class="user-name-input"
           readOnly={!this.isNameEditable}
           maxlength="12"
           value={this.userName}
           onChange={this.onInputChange}
+          onKeyPress={this.onInputKeyPress}
         />
         {this.stream && <audio ref={(elm) => (this.audioElm = elm)} autoPlay />}
       </div>

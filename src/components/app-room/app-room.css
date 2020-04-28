@@ -16,7 +16,7 @@
   display: grid;
   grid-template-columns: 90px 90px;
   align-items: center;
-  margin: 10px 0 30px 0;
+  margin: 10px 0 20px 0;
   background-color: transparent;
 }
 
@@ -108,8 +108,8 @@
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    width: 40%;
-    height: 70px;
+    width: 30%;
+    height: 50px;
   }
 
   .room {
@@ -131,10 +131,5 @@
   .room .bubble .icon-user {
     width: 90px;
     height: 90px;
-  }
-
-  .control {
-    margin-top: 0;
-    margin-bottom: 15px;
   }
 }
