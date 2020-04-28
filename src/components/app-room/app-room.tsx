@@ -99,8 +99,10 @@ export class AppRoom {
     return (
       <div class="main">
         <div class="header">
-          <h2 class="room-name">{this.roomName}</h2>
-          <h2 class="room-user-count">({userBubbles.length})</h2>
+          <div class="room-title">
+            <h2 class="room-name">{this.roomName}</h2>
+            <h2 class="room-user-count">({userBubbles.length})</h2>
+          </div>
           <room-timer startTime={this.startTime} />
         </div>
         <div class="room">

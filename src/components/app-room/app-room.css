@@ -26,11 +26,18 @@
   opacity: 0.5;
 }
 
+.room-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
 .room-name {
   max-width: 200px;
   height: 40px;
+  margin: 0;
   line-height: 40px;
-  margin: 0 3px;
   color: var(--primary-stroke);
   font-size: 1.5rem;
   font-weight: 500;
@@ -40,7 +47,7 @@
 }
 
 .room-user-count {
-  margin: 0 3px;
+  margin: 0 10px;
   font-size: 1.5rem;
   font-weight: 500;
   color: var(--primary-stroke);
