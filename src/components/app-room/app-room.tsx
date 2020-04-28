@@ -67,6 +67,12 @@ export class AppRoom {
       deleteUser(peer.uid)
     })
 
+    this.connector.on('peer-connection-disconnected', (peer: User) => {
+      // If peer has network issue and disconnected (offline), then remove user
+      peer.peerConn?.close()
+      deleteUser(peer.uid)
+    })
+
     this.connector.on('peer-connection-failed', (peer: User) => {
       // Trigger a re-render for new peer connection status
       setUser(peer.uid, peer)

@@ -259,13 +259,14 @@ export default class Connector extends EventEmitter {
      * We will restart ICE candidate connection if it's failed.
      */
     peerConn.addEventListener('iceconnectionstatechange', () => {
-      switch (peerConn.iceConnectionState) {
+      const state = peerConn.iceConnectionState
+      log(
+        `|iceconnectionstatechange| detects iceConnectionState is "${state}" with peer '${userName}' (${uid}).`,
+        { type: 'WebRTC' }
+      )
+      this.emit(`peer-connection-${state}`, this.peersInfo[uid])
+      switch (state) {
         case 'failed':
-          log(
-            `|iceconnectionstatechange| detects iceConnectionState is "failed" with peer '${userName}' (${uid}).`,
-            { type: 'WebRTC' }
-          )
-          this.emit('peer-connection-failed', this.peersInfo[uid])
           negotiateICECandidate({ iceRestart: true })
           break
       }
