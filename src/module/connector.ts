@@ -162,7 +162,7 @@ export default class Connector extends EventEmitter {
     })
   }
 
-  sendToSignalingServer = (data) => {
+  sendToSignalingServer = (data: any) => {
     if (this.ws.readyState === this.ws.OPEN) {
       this.ws.send(JSON.stringify(data))
     } else {
@@ -331,7 +331,6 @@ export default class Connector extends EventEmitter {
     if (this.peersInfo[uid]) {
       this.peersInfo[uid].peerConn.close()
       this.emit('peer-left', this.peersInfo[uid])
-      delete this.peersInfo[uid]
     }
   }
 
