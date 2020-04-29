@@ -4,7 +4,7 @@ interface User {
   roomName?: string
   roomCreatedTime?: string
   stream?: MediaStream
-  peerConn?: RTCPeerConnection
+  rtc?: any
   mute: boolean
 }
 

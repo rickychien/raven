@@ -33,7 +33,7 @@ export class AppRoom {
       retryTimeout: 3000,
     })
 
-    this.connector.on('signaling-server-connected', () => {
+    this.connector.on('signaler-opened', () => {
       this.isConnected = true
       this.connector.joinRoom({
         uid: this.uid,
@@ -43,7 +43,7 @@ export class AppRoom {
       })
     })
 
-    this.connector.on('signaling-server-failed', () => {
+    this.connector.on('signaler-closed', () => {
       this.isConnected = false
     })
 
@@ -54,7 +54,7 @@ export class AppRoom {
       setRoomPref(this.roomName, { uid: user.uid, userName: user.userName })
     })
 
-    this.connector.on('peer-joined', (peer: User) => {
+    this.connector.on('peer-stream-received', (peer: User) => {
       setUser(peer.uid, peer)
     })
 
@@ -63,17 +63,15 @@ export class AppRoom {
     })
 
     this.connector.on('peer-left', (peer: User) => {
-      peer.peerConn?.close()
       deleteUser(peer.uid)
     })
 
-    this.connector.on('peer-connection-disconnected', (peer: User) => {
-      // If peer has network issue and disconnected (offline), then remove user
-      peer.peerConn?.close()
+    this.connector.on('rtc-ice-disconnected', (peer: User) => {
+      // If peer has network issue or disconnected (offline), then remove user
       deleteUser(peer.uid)
     })
 
-    this.connector.on('peer-connection-failed', (peer: User) => {
+    this.connector.on('rtc-ice-failed', (peer: User) => {
       // Trigger a re-render for new peer connection status
       setUser(peer.uid, peer)
     })
@@ -118,7 +116,7 @@ export class AppRoom {
           {userBubbles.map((user) => (
             <user-bubble
               class={
-                user.peerConn?.iceConnectionState === 'failed'
+                user.rtc?.peerConn?.iceConnectionState === 'failed'
                   ? 'peer-disconnected'
                   : ''
               }

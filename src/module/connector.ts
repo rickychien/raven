@@ -1,5 +1,6 @@
 import EventEmitter from 'event-emitter-es6'
 import { log } from '../helpers/utils'
+import RTC from './rtc'
 
 interface SignalingPayload {
   uid?: string
@@ -7,8 +8,8 @@ interface SignalingPayload {
   roomName?: string
   roomCreatedTime?: string
   mute?: boolean
-  offer?: RTCSessionDescriptionInit
-  answer?: RTCSessionDescriptionInit
+  offer?: RTCSessionDescription
+  answer?: RTCSessionDescription
   candidate?: RTCIceCandidate
 }
 
@@ -37,7 +38,7 @@ export default class Connector extends EventEmitter {
   localStream: MediaStream
   peersInfo: {
     [uid: string]: SignalingPayload & {
-      peerConn?: RTCPeerConnection
+      rtc?: RTC
       stream?: MediaStream
     }
   } = {}
@@ -67,7 +68,7 @@ export default class Connector extends EventEmitter {
       'open',
       function onopen() {
         log('Signaling server connection is succeeded.', { type: 'Websocket' })
-        this.emit('signaling-server-connected')
+        this.emit('signaler-opened')
         this.ws.removeEventListener('open', onopen)
         window.clearInterval(this.heartbeatIntervalId)
         this.heartbeatIntervalId = window.setInterval(() => {
@@ -82,7 +83,7 @@ export default class Connector extends EventEmitter {
         log('Signaling server connection is closed, reconnect...', {
           type: 'Websocket',
         })
-        this.emit('signaling-server-failed')
+        this.emit('signaler-closed')
         this.ws.removeEventListener('close', onclose)
         if (!this.reconnectTimeoutId) {
           this.reconnectTimeoutId = window.setTimeout(
@@ -132,6 +133,76 @@ export default class Connector extends EventEmitter {
     })
   }
 
+  createRTC({ uid, userName, roomName, mute }: SignalingPayload) {
+    if (this.peersInfo[uid]?.rtc) {
+      return this.peersInfo[uid].rtc
+    }
+
+    const rtc = new RTC({ iceServerUrls: this.iceServerUrls })
+
+    rtc.on('signal-icecandidate', (candidate) => {
+      this.sendToSignalingServer({
+        type: 'candidate',
+        payload: {
+          uid,
+          candidate,
+        },
+      })
+    })
+
+    rtc.on('signal-offer', (offer) => {
+      // Send the offer to the remote peer.
+      this.sendToSignalingServer({
+        type: 'offer',
+        payload: {
+          uid,
+          offer,
+        },
+      })
+    })
+
+    rtc.on('signal-answer', (answer) => {
+      this.sendToSignalingServer({
+        type: 'answer',
+        payload: {
+          uid,
+          answer,
+        },
+      })
+    })
+
+    rtc.on('negotiationneeded', () => {
+      log(`|negotiationneeded| start with '${userName}' (${uid}).`, {
+        type: 'WebRTC',
+      })
+    })
+
+    rtc.on('iceconnectionstatechange', (state) => {
+      log(
+        `|iceconnectionstatechange| detects iceConnectionState is "${state}" with '${userName}' (${uid}).`,
+        { type: 'WebRTC' }
+      )
+
+      this.emit(`rtc-ice-${state}`, this.peersInfo[uid])
+    })
+
+    rtc.on('stream-received', (stream) => {
+      log(`|track| stream has received from '${userName}' (${uid}).`, {
+        type: 'WebRTC',
+      })
+
+      this.emit('peer-stream-received', { uid, userName, stream })
+    })
+
+    this.localStream
+      .getTracks()
+      .forEach((track) => rtc.addTrackToPeer(track, this.localStream))
+
+    this.emit('peer-info-updated', { uid, userName, roomName, rtc, mute })
+
+    return rtc
+  }
+
   joinRoom({
     uid,
     userName,
@@ -176,160 +247,40 @@ export default class Connector extends EventEmitter {
     }
   }
 
-  createPeerConnection = ({
-    uid,
-    userName,
-    roomName,
-    mute,
-  }: {
-    uid: string
-    userName: string
-    roomName: string
-    mute?: boolean
-  }) => {
-    const peerConn = new RTCPeerConnection({
-      iceServers: [
-        {
-          urls: this.iceServerUrls,
-        },
-      ],
+  handleUserJoined = ({ uid, userName, ...data }: SignalingPayload) => {
+    log(`User '${userName}' (${uid}) joined.`, { type: 'Signaling' })
+
+    this.emit('user-joined', {
+      uid,
+      userName,
+      ...data,
+      stream: this.localStream,
     })
-
-    this.peersInfo[uid] = { uid, userName, roomName, peerConn, mute }
-
-    /**
-     * Handle |icecandidate| events by forwarding the specified
-     * ICE candidate (created by our local ICE agent) to the other
-     * peer through the signaling server.
-     */
-    peerConn.addEventListener('icecandidate', ({ candidate }) => {
-      if (candidate) {
-        this.sendToSignalingServer({
-          type: 'candidate',
-          payload: {
-            uid,
-            candidate,
-          },
-        })
-      }
-    })
-
-    const negotiateICECandidate = async ({ iceRestart }) => {
-      const offer = await peerConn.createOffer({ iceRestart })
-
-      // If the connection hasn't yet achieved the "stable" state,
-      // return to the caller. Another negotiationneeded event
-      // will be fired when the state stabilizes.
-
-      if (peerConn.signalingState !== 'stable') {
-        log(
-          `|negotiationneeded| signalingState is (${peerConn.signalingState}) with peer '${userName}' (${uid}).`,
-          { type: 'WebRTC' }
-        )
-        return
-      }
-
-      // Establish the offer as the local peer's current description.
-      await peerConn.setLocalDescription(offer)
-
-      // Send the offer to the remote peer.
-      this.sendToSignalingServer({
-        type: 'offer',
-        payload: {
-          uid,
-          offer,
-        },
-      })
-    }
-
-    /**
-     * Called by the WebRTC layer to let us know when it's time to
-     * begin, resume, or restart ICE negotiation.
-     */
-    peerConn.addEventListener('negotiationneeded', () => {
-      log(`|negotiationneeded| start with peer '${userName}' (${uid}).`, {
-        type: 'WebRTC',
-      })
-
-      negotiateICECandidate({ iceRestart: false })
-    })
-
-    /**
-     * Handle |iceconnectionstatechange| events.
-     * We will restart ICE candidate connection if it's failed.
-     */
-    peerConn.addEventListener('iceconnectionstatechange', () => {
-      const state = peerConn.iceConnectionState
-      log(
-        `|iceconnectionstatechange| detects iceConnectionState is "${state}" with peer '${userName}' (${uid}).`,
-        { type: 'WebRTC' }
-      )
-      this.emit(`peer-connection-${state}`, this.peersInfo[uid])
-      switch (state) {
-        case 'failed':
-          negotiateICECandidate({ iceRestart: true })
-          break
-      }
-    })
-
-    /**
-     * Called by the WebRTC layer when events occur on the media tracks
-     * on our WebRTC call. This includes when streams are added to and
-     * removed from the call.
-     */
-    peerConn.addEventListener('track', ({ streams }) => {
-      log(`|track| has added by peer '${userName}' (${uid}).`, {
-        type: 'WebRTC',
-      })
-      // Update peer's stream when receiving remote stream
-      this.peersInfo[uid].stream = streams[0]
-
-      this.emit('peer-joined', this.peersInfo[uid])
-    })
-
-    return peerConn
-  }
-
-  handleUserJoined(user: SignalingPayload) {
-    log(`User '${user.userName}' (${user.uid}) has joined.`, {
-      type: 'Signaling',
-    })
-
-    this.emit('user-joined', { ...user, stream: this.localStream })
   }
 
   handlePeerJoined = ({ uid, userName, roomName, mute }: SignalingPayload) => {
-    log(`Peer '${userName}' (${uid}) has joined. `, { type: 'Signaling' })
+    log(`Peer '${userName}' (${uid}) joined. `, { type: 'Signaling' })
 
-    // If signaling server reconnection happends, WebRTC peer connection might be
-    // still connected. We can skip the peer connection negotiation.
-    if (this.peersInfo[uid]?.peerConn?.iceConnectionState === 'connected') {
-      return
-    }
-
-    const peerConn = this.createPeerConnection({
-      uid,
-      userName,
-      roomName,
-      mute,
-    })
-
-    this.localStream
-      .getTracks()
-      .forEach((track) => peerConn.addTrack(track, this.localStream))
+    const rtc = this.createRTC({ uid, userName, roomName, mute })
+    this.peersInfo[uid] = { uid, userName, roomName, rtc, mute }
   }
 
-  handlePeerUpdated(user: SignalingPayload) {
-    log(`Peer '${user.userName}' (${user.uid}) has updated.`, {
-      type: 'Signaling',
+  handlePeerUpdated({ uid, userName, ...data }: SignalingPayload) {
+    log(`Peer '${userName}' (${uid}) updated.`, { type: 'Signaling' })
+
+    this.emit('peer-info-updated', {
+      uid,
+      userName,
+      ...data,
     })
-    this.emit('peer-info-updated', user)
   }
 
   handlePeerLeft({ uid, userName }: SignalingPayload) {
-    log(`Peer '${userName}' (${uid}) has left.`, { type: 'Signaling' })
+    log(`Peer '${userName}' (${uid}) left.`, { type: 'Signaling' })
+
     if (this.peersInfo[uid]) {
-      this.peersInfo[uid].peerConn.close()
+      this.peersInfo[uid].rtc.close()
+      this.peersInfo[uid].rtc = null
       this.emit('peer-left', this.peersInfo[uid])
     }
   }
@@ -346,67 +297,29 @@ export default class Connector extends EventEmitter {
     offer,
     mute,
   }: SignalingPayload) => {
-    log(`Received offer from peer ${userName}' (${uid})`, { type: 'Signaling' })
+    log(`Received offer from ${userName}' (${uid})`, { type: 'Signaling' })
 
-    // If signaling server reconnection happends, WebRTC peer connection might be
-    // still connected. We can skip the peer connection negotiation.
-    if (this.peersInfo[uid]?.peerConn?.iceConnectionState === 'connected') {
-      return
-    }
-
-    const peerConn = this.createPeerConnection({
-      uid,
-      userName,
-      roomName,
-      mute,
-    })
-
-    if (peerConn.signalingState !== 'stable') {
-      log(
-        `Connection's signaling state unstable with peer '${userName}' (${uid}).`,
-        { type: 'WebRTC' }
-      )
-    }
-
-    await peerConn.setRemoteDescription(offer)
-
-    this.localStream
-      .getTracks()
-      .forEach((track) => peerConn.addTrack(track, this.localStream))
-
-    const answer = await peerConn.createAnswer()
-
-    await peerConn.setLocalDescription(answer)
-
-    this.sendToSignalingServer({
-      type: 'answer',
-      payload: {
-        uid,
-        answer,
-      },
-    })
+    const rtc = this.createRTC({ uid, userName, roomName, mute })
+    this.peersInfo[uid] = { uid, userName, roomName, rtc, mute }
+    this.peersInfo[uid].rtc.handleRemoteSDP(offer)
   }
 
   /**
    * As caller, accepting an answer from caller.
    */
-  handleAnswer({ uid, userName, answer }: SignalingPayload) {
-    log(`Received answer from peer '${userName}' (${uid})`, {
-      type: 'Signaling',
-    })
+  handleAnswer = async ({ uid, userName, answer }: SignalingPayload) => {
+    log(`Received answer from '${userName}' (${uid})`, { type: 'Signaling' })
 
-    this.peersInfo[uid].peerConn.setRemoteDescription(answer)
+    this.peersInfo[uid].rtc.handleRemoteSDP(answer)
   }
 
   /**
    * Both caller and callee will receive icecandidate event to exchange the ICE,
    * and set up ICE candidate to peer connection.
    */
-  handleCandidate({ uid, userName, candidate }: SignalingPayload) {
-    log(`Received ICE candidate from peer ${userName}' (${uid})`, {
-      type: 'Signaling',
-    })
+  handleCandidate = async ({ uid, userName, candidate }: SignalingPayload) => {
+    log(`Received candidate from ${userName}' (${uid})`, { type: 'Signaling' })
 
-    this.peersInfo[uid].peerConn.addIceCandidate(new RTCIceCandidate(candidate))
+    this.peersInfo[uid].rtc.handleRemoteCandidate(candidate)
   }
 }
