@@ -81,12 +81,14 @@ export class AppRoom {
 
   onVolumeOnChange = ({ detail: on }: CustomEvent) => {
     state.users.forEach(({ uid, stream }) => {
+      // We don't change local output stream but remote input stream
       if (uid === this.uid) return
       stream.getAudioTracks()[0].enabled = on
     })
   }
 
   onMicOnChange = ({ detail: on }: CustomEvent) => {
+    // Change local output stream
     state.users.get(this.uid).stream.getAudioTracks()[0].enabled = on
     setUser(this.uid, { mute: !on })
     this.connector.sendUserUpdate({ mute: !on })

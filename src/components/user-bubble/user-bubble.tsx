@@ -40,6 +40,17 @@ export class UserBubble {
     }
   }
 
+  onStreamPlaying = () => {
+    // Workaround for iOS to enable loudspeaker by default
+    // Re-trigger the audio track can enable iOS loudspeaker
+    // See https://bugs.webkit.org/show_bug.cgi?id=196539
+    const audioTrack = this.stream.getAudioTracks()[0]
+    audioTrack.enabled = !audioTrack.enabled
+    setTimeout(() => {
+      audioTrack.enabled = !audioTrack.enabled
+    }, 2000)
+  }
+
   @Watch('stream')
   handleStreamChange() {
     if (this.audioElm) {
@@ -64,7 +75,11 @@ export class UserBubble {
           onChange={this.onInputChange}
           onKeyPress={this.onInputKeyPress}
         />
-        <audio ref={(elm) => (this.audioElm = elm)} autoPlay />
+        <audio
+          ref={(elm) => (this.audioElm = elm)}
+          autoPlay
+          onPlaying={this.onStreamPlaying}
+        />
       </div>
     )
   }
