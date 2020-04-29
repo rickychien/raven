@@ -64,7 +64,7 @@ export class UserBubble {
           onChange={this.onInputChange}
           onKeyPress={this.onInputKeyPress}
         />
-        {this.stream && <audio ref={(elm) => (this.audioElm = elm)} autoPlay />}
+        <audio ref={(elm) => (this.audioElm = elm)} autoPlay />
       </div>
     )
   }

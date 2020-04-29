@@ -2,9 +2,17 @@ import EventEmitter from 'event-emitter-es6'
 
 export default class RTC extends EventEmitter {
   peerConn: RTCPeerConnection = null
+  caller: boolean = false
 
-  constructor({ iceServerUrls }: { iceServerUrls: string[] }) {
+  constructor({
+    caller,
+    iceServerUrls,
+  }: {
+    caller: boolean
+    iceServerUrls: string[]
+  }) {
     super()
+    this.caller = caller
     const peerConn = (this.peerConn = new RTCPeerConnection({
       iceServers: [
         {
@@ -41,6 +49,7 @@ export default class RTC extends EventEmitter {
       const state = peerConn.iceConnectionState
       this.emit(`iceconnectionstatechange`, state)
       switch (state) {
+        case 'disconnected':
         case 'failed':
           this.negotiateICECandidate({ iceRestart: true })
           break
@@ -60,10 +69,11 @@ export default class RTC extends EventEmitter {
   negotiateICECandidate = async ({ iceRestart }) => {
     const offer = await this.peerConn.createOffer({ iceRestart })
 
-    if (this.peerConn.signalingState === 'stable') {
-      await this.peerConn.setLocalDescription(offer)
-      this.emit('signal-offer', offer)
-    }
+    if (this.peerConn.signalingState !== 'stable') return
+
+    await this.peerConn.setLocalDescription(offer)
+
+    this.emit('signal-offer', offer)
   }
 
   addTrackToPeer(track: MediaStreamTrack, stream: MediaStream) {
@@ -81,11 +91,9 @@ export default class RTC extends EventEmitter {
     }
 
     if (SDP.type === 'offer') {
-      await this.peerConn.setLocalDescription(
-        await this.peerConn.createAnswer()
-      )
-
-      this.emit('signal-answer', this.peerConn.localDescription)
+      const answer = await this.peerConn.createAnswer()
+      await this.peerConn.setLocalDescription(answer)
+      this.emit('signal-answer', answer)
     }
   }
 

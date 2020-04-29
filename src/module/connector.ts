@@ -35,6 +35,7 @@ export default class Connector extends EventEmitter {
   heartbeatIntervalId: number = 0
   iceServerUrls: string[] = []
   retryTimeout: number = 1000
+  uid: string
   localStream: MediaStream
   peersInfo: {
     [uid: string]: SignalingPayload & {
@@ -138,7 +139,10 @@ export default class Connector extends EventEmitter {
       return this.peersInfo[uid].rtc
     }
 
-    const rtc = new RTC({ iceServerUrls: this.iceServerUrls })
+    const rtc = new RTC({
+      caller: this.uid < uid,
+      iceServerUrls: this.iceServerUrls,
+    })
 
     rtc.on('signal-icecandidate', (candidate) => {
       this.sendToSignalingServer({
@@ -177,9 +181,9 @@ export default class Connector extends EventEmitter {
       })
     })
 
-    rtc.on('iceconnectionstatechange', (state) => {
+    rtc.on('iceconnectionstatechange', (state: RTCIceConnectionState) => {
       log(
-        `|iceconnectionstatechange| detects iceConnectionState is "${state}" with '${userName}' (${uid}).`,
+        `|iceconnectionstatechange| detects iceConnectionState is '${state}' with '${userName}' (${uid}).`,
         { type: 'WebRTC' }
       )
 
@@ -214,6 +218,7 @@ export default class Connector extends EventEmitter {
     roomName: string
     stream: MediaStream
   }) {
+    this.uid = uid
     this.localStream = stream
     this.sendToSignalingServer({
       type: 'join',
@@ -279,7 +284,7 @@ export default class Connector extends EventEmitter {
     log(`Peer '${userName}' (${uid}) left.`, { type: 'Signaling' })
 
     if (this.peersInfo[uid]) {
-      this.peersInfo[uid].rtc.close()
+      this.peersInfo[uid].rtc?.close()
       this.peersInfo[uid].rtc = null
       this.emit('peer-left', this.peersInfo[uid])
     }
