@@ -12,7 +12,7 @@ import { getRoomPref, setRoomPref } from '../../helpers/utils'
 export class AppRoom {
   @Prop() match: MatchResults
   @State() elapsed: string = '0:00'
-  @State() isConnected: boolean = false
+  @State() isSignalerConnected: boolean = false
   @State() startTime: number = 0
   roomName: string = this.match.params.roomName
   uid: string = getRoomPref(this.roomName).uid
@@ -34,7 +34,7 @@ export class AppRoom {
     })
 
     this.connector.on('signaler-opened', () => {
-      this.isConnected = true
+      this.isSignalerConnected = true
       this.connector.joinRoom({
         uid: this.uid,
         userName: this.userName,
@@ -44,7 +44,7 @@ export class AppRoom {
     })
 
     this.connector.on('signaler-closed', () => {
-      this.isConnected = false
+      this.isSignalerConnected = false
     })
 
     this.connector.on('user-joined', (user: User) => {
@@ -66,13 +66,8 @@ export class AppRoom {
       deleteUser(peer.uid)
     })
 
-    this.connector.on('rtc-ice-disconnected', (peer: User) => {
+    this.connector.on('rtc-ice-state-change', (peer: User) => {
       // If peer has network issue or disconnected (offline), then remove user
-      deleteUser(peer.uid)
-    })
-
-    this.connector.on('rtc-ice-failed', (peer: User) => {
-      // Trigger a re-render for new peer connection status
       setUser(peer.uid, peer)
     })
   }
@@ -97,6 +92,12 @@ export class AppRoom {
     this.connector.sendUserUpdate({ mute: !on })
   }
 
+  isPeerConnected = (user: User) => {
+    if (this.uid === user.uid) return true
+
+    return /^connected|completed$/.test(user.rtc?.peerConn?.iceConnectionState)
+  }
+
   render() {
     const userBubbles = Array.from(state.users.values())
 
@@ -115,11 +116,7 @@ export class AppRoom {
           </div>
           {userBubbles.map((user) => (
             <user-bubble
-              class={
-                user.rtc?.peerConn?.iceConnectionState === 'failed'
-                  ? 'peer-disconnected'
-                  : ''
-              }
+              class={this.isPeerConnected(user) ? '' : 'peer-disconnected'}
               userName={user.userName}
               stream={this.uid === user.uid ? null : user.stream}
               isNameEditable={this.uid === user.uid}
@@ -128,7 +125,7 @@ export class AppRoom {
             />
           ))}
         </div>
-        <div class={'control' + (this.isConnected ? '' : ' disabled')}>
+        <div class={'control' + (this.isSignalerConnected ? '' : ' disabled')}>
           <control-volume onSwitchChange={this.onVolumeOnChange} />
           <control-mic onSwitchChange={this.onMicOnChange} />
         </div>

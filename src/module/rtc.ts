@@ -1,18 +1,20 @@
 import EventEmitter from 'event-emitter-es6'
 
 export default class RTC extends EventEmitter {
+  // Polite peer which is using for rollback to prevent collisions with incoming offers
+  // https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Perfect_negotiation#Implementing_perfect_negotiation
+  polite: boolean = false
   peerConn: RTCPeerConnection = null
-  caller: boolean = false
 
   constructor({
-    caller,
+    polite,
     iceServerUrls,
   }: {
-    caller: boolean
+    polite: boolean
     iceServerUrls: string[]
   }) {
     super()
-    this.caller = caller
+    this.polite = polite
     const peerConn = (this.peerConn = new RTCPeerConnection({
       iceServers: [
         {
@@ -82,6 +84,8 @@ export default class RTC extends EventEmitter {
 
   handleRemoteSDP = async (SDP: RTCSessionDescription) => {
     if (SDP.type === 'offer' && this.peerConn.signalingState !== 'stable') {
+      if (!this.polite) return
+
       await Promise.all([
         this.peerConn.setLocalDescription({ type: 'rollback' }),
         this.peerConn.setRemoteDescription(SDP),

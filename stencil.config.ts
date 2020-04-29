@@ -3,6 +3,7 @@ import { inlineSvg } from 'stencil-inline-svg'
 import replace from '@rollup/plugin-replace'
 
 const {
+  // SIGNAL_SERVER_HOST = '192.168.1.12÷:5001',
   SIGNAL_SERVER_HOST = 'localhost:5001',
   ICE_SERVER_URL_1 = 'stun:stun.l.google.com:19302',
   ICE_SERVER_URL_2 = 'stun:s1.taraba.net',

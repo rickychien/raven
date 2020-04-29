@@ -38,6 +38,7 @@ export class InputTypewriter {
   render() {
     return (
       <input
+        autoFocus
         placeholder={this.typewriter}
         onChange={this.onInputChange}
         onKeyPress={this.onInputEnterKeyPress}

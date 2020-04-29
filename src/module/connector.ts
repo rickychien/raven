@@ -140,7 +140,7 @@ export default class Connector extends EventEmitter {
     }
 
     const rtc = new RTC({
-      caller: this.uid < uid,
+      polite: this.uid < uid,
       iceServerUrls: this.iceServerUrls,
     })
 
@@ -187,7 +187,7 @@ export default class Connector extends EventEmitter {
         { type: 'WebRTC' }
       )
 
-      this.emit(`rtc-ice-${state}`, this.peersInfo[uid])
+      this.emit(`rtc-ice-state-change`, this.peersInfo[uid])
     })
 
     rtc.on('stream-received', (stream) => {
