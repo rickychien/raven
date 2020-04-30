@@ -1,4 +1,4 @@
-import { Component, h, Prop, State } from '@stencil/core'
+import { Component, h, Prop, State, Watch } from '@stencil/core'
 import registerVolumeMeter from '../../module/volume-meter'
 
 @Component({
@@ -12,7 +12,7 @@ export class AudioWave {
   audioContext: AudioContext
   meter: any
 
-  componentDidLoad = () => {
+  componentWillLoad = () => {
     this.attachVolumeMeter(this.stream)
   }
 
@@ -23,7 +23,8 @@ export class AudioWave {
     this.meter = null
   }
 
-  attachVolumeMeter = (stream: MediaStream) => {
+  @Watch('stream')
+  attachVolumeMeter(stream: MediaStream) {
     if (!stream) return
 
     this.audioContext?.close()

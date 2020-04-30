@@ -7,7 +7,8 @@ interface SignalingPayload {
   userName?: string
   roomName?: string
   roomCreatedTime?: string
-  mute?: boolean
+  muteSpeaker?: boolean
+  muteVolume?: boolean
   offer?: RTCSessionDescription
   answer?: RTCSessionDescription
   candidate?: RTCIceCandidate
@@ -134,7 +135,13 @@ export default class Connector extends EventEmitter {
     })
   }
 
-  createRTC({ uid, userName, roomName, mute }: SignalingPayload) {
+  createRTC({
+    uid,
+    userName,
+    roomName,
+    muteSpeaker,
+    muteVolume,
+  }: SignalingPayload) {
     if (this.peersInfo[uid]?.rtc) {
       return this.peersInfo[uid].rtc
     }
@@ -202,7 +209,14 @@ export default class Connector extends EventEmitter {
       .getTracks()
       .forEach((track) => rtc.addTrackToPeer(track, this.localStream))
 
-    this.emit('peer-info-updated', { uid, userName, roomName, rtc, mute })
+    this.emit('peer-info-updated', {
+      uid,
+      userName,
+      roomName,
+      rtc,
+      muteSpeaker,
+      muteVolume,
+    })
 
     return rtc
   }
@@ -263,11 +277,30 @@ export default class Connector extends EventEmitter {
     })
   }
 
-  handlePeerJoined = ({ uid, userName, roomName, mute }: SignalingPayload) => {
+  handlePeerJoined = ({
+    uid,
+    userName,
+    roomName,
+    muteSpeaker,
+    muteVolume,
+  }: SignalingPayload) => {
     log(`Peer '${userName}' (${uid}) joined. `, { type: 'Signaling' })
 
-    const rtc = this.createRTC({ uid, userName, roomName, mute })
-    this.peersInfo[uid] = { uid, userName, roomName, rtc, mute }
+    const rtc = this.createRTC({
+      uid,
+      userName,
+      roomName,
+      muteSpeaker,
+      muteVolume,
+    })
+    this.peersInfo[uid] = {
+      uid,
+      userName,
+      roomName,
+      rtc,
+      muteSpeaker,
+      muteVolume,
+    }
   }
 
   handlePeerUpdated({ uid, userName, ...data }: SignalingPayload) {
@@ -300,12 +333,26 @@ export default class Connector extends EventEmitter {
     userName,
     roomName,
     offer,
-    mute,
+    muteSpeaker,
+    muteVolume,
   }: SignalingPayload) => {
     log(`Received offer from ${userName}' (${uid})`, { type: 'Signaling' })
 
-    const rtc = this.createRTC({ uid, userName, roomName, mute })
-    this.peersInfo[uid] = { uid, userName, roomName, rtc, mute }
+    const rtc = this.createRTC({
+      uid,
+      userName,
+      roomName,
+      muteSpeaker,
+      muteVolume,
+    })
+    this.peersInfo[uid] = {
+      uid,
+      userName,
+      roomName,
+      rtc,
+      muteSpeaker,
+      muteVolume,
+    }
     this.peersInfo[uid].rtc.handleRemoteSDP(offer)
   }
 

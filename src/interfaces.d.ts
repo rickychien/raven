@@ -5,7 +5,8 @@ interface User {
   roomCreatedTime?: string
   stream?: MediaStream
   rtc?: any
-  mute: boolean
+  muteSpeaker: boolean
+  muteVolume: boolean
 }
 
 interface Store {

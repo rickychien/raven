@@ -30,8 +30,8 @@ export namespace Components {
         "startTime": number;
     }
     interface UserBubble {
-        "isMute": boolean;
         "isNameEditable": boolean;
+        "isSpeakerMute": boolean;
         "playAudioStream": boolean;
         "stream": MediaStream;
         "userName": string;
@@ -132,8 +132,8 @@ declare namespace LocalJSX {
         "startTime"?: number;
     }
     interface UserBubble {
-        "isMute"?: boolean;
         "isNameEditable"?: boolean;
+        "isSpeakerMute"?: boolean;
         "onUserNameChange"?: (event: CustomEvent<any>) => void;
         "playAudioStream"?: boolean;
         "stream"?: MediaStream;

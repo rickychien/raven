@@ -55,6 +55,8 @@ export class AppRoom {
     })
 
     this.connector.on('peer-stream-received', (peer: User) => {
+      const enabled = !state.users.get(this.uid).muteVolume
+      peer.stream.getAudioTracks()[0].enabled = enabled
       setUser(peer.uid, peer)
     })
 
@@ -85,13 +87,14 @@ export class AppRoom {
       if (uid === this.uid) return
       stream.getAudioTracks()[0].enabled = on
     })
+    setUser(this.uid, { muteVolume: !on })
   }
 
-  onMicOnChange = ({ detail: on }: CustomEvent) => {
+  onSpeakerOnChange = ({ detail: on }: CustomEvent) => {
     // Change local output stream
     state.users.get(this.uid).stream.getAudioTracks()[0].enabled = on
-    setUser(this.uid, { mute: !on })
-    this.connector.sendUserUpdate({ mute: !on })
+    setUser(this.uid, { muteSpeaker: !on })
+    this.connector.sendUserUpdate({ muteSpeaker: !on })
   }
 
   isPeerConnected = (user: User) => {
@@ -123,14 +126,14 @@ export class AppRoom {
               stream={user.stream}
               playAudioStream={this.uid !== user.uid}
               isNameEditable={this.uid === user.uid}
-              isMute={user.mute}
+              isSpeakerMute={user.muteSpeaker}
               onUserNameChange={this.onUserNameChange}
             />
           ))}
         </div>
         <div class={'control' + (this.isSignalerConnected ? '' : ' disabled')}>
           <control-volume onSwitchChange={this.onVolumeOnChange} />
-          <control-mic onSwitchChange={this.onMicOnChange} />
+          <control-mic onSwitchChange={this.onSpeakerOnChange} />
         </div>
       </div>
     )

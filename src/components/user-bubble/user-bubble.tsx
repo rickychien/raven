@@ -19,7 +19,7 @@ export class UserBubble {
   @Prop() stream: MediaStream
   @Prop() playAudioStream: boolean = false
   @Prop() isNameEditable: boolean = false
-  @Prop() isMute: boolean = false
+  @Prop() isSpeakerMute: boolean = false
   @State() audioVolume: number = 0
   @Event() userNameChange: EventEmitter
   audioElm!: HTMLAudioElement
@@ -63,7 +63,7 @@ export class UserBubble {
       <div class="bubble">
         <div class="icon-user" innerHTML={IconUser}></div>
         <div class="indicator">
-          {this.isMute ? (
+          {this.isSpeakerMute ? (
             <div class="icon-mic-off" innerHTML={IconMicOff}></div>
           ) : (
             <audio-wave stream={this.stream} />
