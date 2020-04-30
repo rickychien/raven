@@ -131,7 +131,6 @@
 
   .room {
     flex-wrap: nowrap;
-    justify-content: start;
     overflow-x: auto;
   }
 

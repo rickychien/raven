@@ -1,8 +1,7 @@
 :host {
   display: flex;
   align-items: center;
-  margin: 10px 0;
-  height: 10px;
+  height: 12px;
 }
 
 .wave-wrapper {
@@ -14,7 +13,7 @@
   display: inline-block;
   background: #03a9f4;
   height: 100%;
-  width: 1px;
+  width: 1.5px;
   margin: 0 1.5px;
   animation: load 1s ease-in-out infinite;
 }

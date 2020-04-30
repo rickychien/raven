@@ -31,7 +31,17 @@
   width: 100%;
 }
 
+.indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 32px;
+}
+
 .icon-mic-off {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 30px;
   height: 30px;
   color: var(--primary-negitive);

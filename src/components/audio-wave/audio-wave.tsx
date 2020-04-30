@@ -35,7 +35,7 @@ export class AudioWave {
       (volume: number) => {
         if (volume >= 1) {
           this.audioVolume = Math.min(Math.floor(volume * 3), 6)
-        } else {
+        } else if (this.audioVolume !== 2) {
           this.audioVolume = 2
         }
       }

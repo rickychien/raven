@@ -62,11 +62,13 @@ export class UserBubble {
     return (
       <div class="bubble">
         <div class="icon-user" innerHTML={IconUser}></div>
-        {this.isMute ? (
-          <div class="icon-mic-off" innerHTML={IconMicOff}></div>
-        ) : (
-          <audio-wave stream={this.stream} />
-        )}
+        <div class="indicator">
+          {this.isMute ? (
+            <div class="icon-mic-off" innerHTML={IconMicOff}></div>
+          ) : (
+            <audio-wave stream={this.stream} />
+          )}
+        </div>
         <input
           ref={(elm) => (this.inputElm = elm)}
           class="user-name-input"
