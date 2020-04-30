@@ -120,7 +120,8 @@ export class AppRoom {
             <user-bubble
               class={this.isPeerConnected(user) ? '' : 'peer-disconnected'}
               userName={user.userName}
-              stream={this.uid === user.uid ? null : user.stream}
+              stream={user.stream}
+              playAudioStream={this.uid !== user.uid}
               isNameEditable={this.uid === user.uid}
               isMute={user.mute}
               onUserNameChange={this.onUserNameChange}

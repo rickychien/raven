@@ -8,7 +8,6 @@ import {
   EventEmitter,
 } from '@stencil/core'
 import IconUser from '../../assets/user.svg'
-import IconMicOn from '../../assets/mic-on.svg'
 import IconMicOff from '../../assets/mic-off.svg'
 
 @Component({
@@ -18,6 +17,7 @@ import IconMicOff from '../../assets/mic-off.svg'
 export class UserBubble {
   @Prop() userName: string
   @Prop() stream: MediaStream
+  @Prop() playAudioStream: boolean = false
   @Prop() isNameEditable: boolean = false
   @Prop() isMute: boolean = false
   @State() audioVolume: number = 0
@@ -62,10 +62,11 @@ export class UserBubble {
     return (
       <div class="bubble">
         <div class="icon-user" innerHTML={IconUser}></div>
-        <div
-          class={this.isMute ? 'icon-mic-off' : 'icon-mic-on'}
-          innerHTML={this.isMute ? IconMicOff : IconMicOn}
-        ></div>
+        {this.isMute ? (
+          <div class="icon-mic-off" innerHTML={IconMicOff}></div>
+        ) : (
+          <audio-wave stream={this.stream} />
+        )}
         <input
           ref={(elm) => (this.inputElm = elm)}
           class="user-name-input"
@@ -77,7 +78,7 @@ export class UserBubble {
         />
         <audio
           ref={(elm) => (this.audioElm = elm)}
-          autoPlay
+          autoPlay={this.playAudioStream}
           onPlaying={this.onStreamPlaying}
         />
       </div>

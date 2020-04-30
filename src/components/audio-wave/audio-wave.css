@@ -1,0 +1,68 @@
+:host {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+  height: 10px;
+}
+
+.wave-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.wave {
+  display: inline-block;
+  background: #03a9f4;
+  height: 100%;
+  width: 1px;
+  margin: 0 1.5px;
+  animation: load 1s ease-in-out infinite;
+}
+
+.wave.rectangle-2 {
+  animation-delay: 0.1s;
+}
+
+.wave.rectangle-3 {
+  animation-delay: 0.2s;
+}
+
+.wave.rectangle-4 {
+  animation-delay: 0.3s;
+}
+
+.wave.rectangle-5 {
+  animation-delay: 0.4s;
+}
+
+.wave.rectangle-6 {
+  animation-delay: 0.5s;
+}
+
+@keyframes load {
+  0%,
+  100% {
+    transform: scaleY(1);
+    background: #03a9f4;
+  }
+  16.67% {
+    transform: scaleY(3);
+    background: #ff5722;
+  }
+  33.33% {
+    transform: scaleY(1);
+    background: #ff5252;
+  }
+  50% {
+    transform: scaleY(3);
+    background: #e91e63;
+  }
+  66.67% {
+    transform: scaleY(1);
+    background: #9c27b0;
+  }
+  83.34% {
+    transform: scaleY(3);
+    background: #673ab7;
+  }
+}

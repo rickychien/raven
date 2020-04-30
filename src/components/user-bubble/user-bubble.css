@@ -21,7 +21,6 @@
 .icon-user {
   width: 120px;
   height: 120px;
-  margin: 10px 0;
   padding: 25px;
   border-radius: 50%;
   border: 2px solid var(--primary-line);
@@ -30,12 +29,6 @@
 
 .icon-user > svg {
   width: 100%;
-}
-
-.icon-mic-on {
-  width: 30px;
-  height: 30px;
-  color: var(--primary-positive);
 }
 
 .icon-mic-off {
