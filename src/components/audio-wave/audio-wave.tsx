@@ -1,5 +1,5 @@
 import { Component, h, Prop, State, Watch } from '@stencil/core'
-import registerVolumeMeter from '../../module/volume-meter'
+import onVolumeChange from '../../module/volume-meter'
 
 @Component({
   tag: 'audio-wave',
@@ -9,41 +9,27 @@ import registerVolumeMeter from '../../module/volume-meter'
 export class AudioWave {
   @Prop() stream: MediaStream
   @State() audioVolume: number
-  audioContext: AudioContext
-  meter: any
+  stop: () => void
 
   componentWillLoad = () => {
-    this.attachVolumeMeter(this.stream)
+    this.attachVolumeMeter()
   }
 
   componentDidUnload = () => {
-    this.audioContext?.close()
-    this.audioContext = null
-    this.meter?.stop()
-    this.meter = null
+    this.stop()
   }
 
   @Watch('stream')
-  attachVolumeMeter(stream: MediaStream) {
-    if (!stream) return
+  attachVolumeMeter() {
+    if (!this.stream) {
+      this.stop?.()
+      this.stop = null
+      return
+    }
 
-    this.audioContext?.close()
-    this.meter?.stop()
-    this.audioContext = new AudioContext()
-    this.meter = registerVolumeMeter(
-      this.audioContext,
-      { tweenIn: 1, tweenOut: 6 },
-      (volume: number) => {
-        if (volume >= 1) {
-          this.audioVolume = Math.min(Math.floor(volume * 3), 6)
-        } else if (this.audioVolume !== 2) {
-          this.audioVolume = 2
-        }
-      }
-    )
-    this.audioContext
-      .createMediaStreamSource(stream)
-      .connect(this.meter.analyser)
+    this.stop = onVolumeChange(this.stream, (volume) => {
+      this.audioVolume = volume >= 2 ? Math.min(volume, 6) : 2
+    })
   }
 
   render() {

@@ -1,67 +1,46 @@
-export default function registerVolumeMeter(
-  context: AudioContext,
-  opts: {
-    fftSize?: number
-    tweenIn?: number
-    tweenOut?: number
-  },
+export default function onVolumeChange(
+  stream: MediaStream,
   onEnterFrame: (volume: number) => void
-): {
-  analyser: AnalyserNode
-  stop: () => void
-} {
-  opts.fftSize = opts.fftSize || 32
-  opts.tweenIn = opts.tweenIn || 1.618
-  opts.tweenOut = opts.tweenOut || opts.tweenIn * 3
+): () => void {
+  let audioContext = new AudioContext()
+  let analyser: AnalyserNode = audioContext.createAnalyser()
+  analyser.smoothingTimeConstant = 0.3
+  analyser.fftSize = 1024
 
-  let analyser: AnalyserNode = context.createAnalyser()
-  let buffer: Uint8Array = new Uint8Array(opts.fftSize)
-  let range: number
-  let next: number
-  let tween: number
+  let frequencyData = new Uint8Array(analyser.frequencyBinCount)
+  let volume: number
   let raf: number
-  let last: number = 0
-  let loop: boolean = true
 
-  function stop() {
-    loop = false
-    cancelAnimationFrame(raf)
+  function getAverageVolume(array: Uint8Array) {
+    const length = array.length
+    let values = 0
+
+    // Get all the frequency amplitudes
+    for (let i = 0; i < length; i++) {
+      values += array[i]
+    }
+
+    return values / length
   }
 
-  // The fftSize property governs the sample size even
-  // when we are not requesting frequency domain data
-  analyser.fftSize = opts.fftSize
+  ;(function render() {
+    analyser.getByteFrequencyData(frequencyData)
+    const newVolume = Math.round(getAverageVolume(frequencyData))
 
-  function render() {
-    if (!loop) return
-    analyser.getByteTimeDomainData(buffer)
-    range = getDynamicRange(buffer) * (Math.E - 1)
-    next = Math.floor(Math.log1p(range) * 100)
-    tween = next > last ? opts.tweenIn : opts.tweenOut
-    next = last = last + (next - last) / tween
+    if (volume !== newVolume) {
+      volume = newVolume
+      onEnterFrame(volume)
+    }
 
-    onEnterFrame(next)
     raf = requestAnimationFrame(render)
+  })()
+
+  audioContext.createMediaStreamSource(stream).connect(analyser)
+
+  return function stop() {
+    cancelAnimationFrame(raf)
+    audioContext.close()
+    audioContext = null
+    analyser = null
   }
-
-  render()
-
-  return {
-    analyser,
-    stop,
-  }
-}
-
-function getDynamicRange(buffer: Uint8Array) {
-  let len = buffer.length
-  let min = 128
-  let max = 128
-
-  for (let i = 0; i < len; i++) {
-    let sample = buffer[i]
-    if (sample < min) min = sample
-    else if (sample > max) max = sample
-  }
-
-  return (max - min) / 255
 }
