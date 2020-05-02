@@ -25,13 +25,7 @@ export class AppRoom {
   }
 
   setupConnector = async () => {
-    this.stream = await navigator.mediaDevices.getUserMedia({
-      audio: {
-        autoGainControl: false,
-        noiseSuppression: false,
-        echoCancellation: false,
-      },
-    })
+    this.stream = await navigator.mediaDevices.getUserMedia({ audio: true })
 
     this.connector = new Connector({
       wsServerUrl: SIGNAL_SERVER_URL,
