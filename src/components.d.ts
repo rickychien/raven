@@ -14,9 +14,6 @@ export namespace Components {
     }
     interface AppRoot {
     }
-    interface AudioWave {
-        "stream": MediaStream;
-    }
     interface ControlMic {
         "on": boolean;
     }
@@ -56,12 +53,6 @@ declare global {
         prototype: HTMLAppRootElement;
         new (): HTMLAppRootElement;
     };
-    interface HTMLAudioWaveElement extends Components.AudioWave, HTMLStencilElement {
-    }
-    var HTMLAudioWaveElement: {
-        prototype: HTMLAudioWaveElement;
-        new (): HTMLAudioWaveElement;
-    };
     interface HTMLControlMicElement extends Components.ControlMic, HTMLStencilElement {
     }
     var HTMLControlMicElement: {
@@ -96,7 +87,6 @@ declare global {
         "app-home": HTMLAppHomeElement;
         "app-room": HTMLAppRoomElement;
         "app-root": HTMLAppRootElement;
-        "audio-wave": HTMLAudioWaveElement;
         "control-mic": HTMLControlMicElement;
         "control-volume": HTMLControlVolumeElement;
         "input-typewriter": HTMLInputTypewriterElement;
@@ -111,9 +101,6 @@ declare namespace LocalJSX {
         "match"?: MatchResults;
     }
     interface AppRoot {
-    }
-    interface AudioWave {
-        "stream"?: MediaStream;
     }
     interface ControlMic {
         "on"?: boolean;
@@ -143,7 +130,6 @@ declare namespace LocalJSX {
         "app-home": AppHome;
         "app-room": AppRoom;
         "app-root": AppRoot;
-        "audio-wave": AudioWave;
         "control-mic": ControlMic;
         "control-volume": ControlVolume;
         "input-typewriter": InputTypewriter;
@@ -158,7 +144,6 @@ declare module "@stencil/core" {
             "app-home": LocalJSX.AppHome & JSXBase.HTMLAttributes<HTMLAppHomeElement>;
             "app-room": LocalJSX.AppRoom & JSXBase.HTMLAttributes<HTMLAppRoomElement>;
             "app-root": LocalJSX.AppRoot & JSXBase.HTMLAttributes<HTMLAppRootElement>;
-            "audio-wave": LocalJSX.AudioWave & JSXBase.HTMLAttributes<HTMLAudioWaveElement>;
             "control-mic": LocalJSX.ControlMic & JSXBase.HTMLAttributes<HTMLControlMicElement>;
             "control-volume": LocalJSX.ControlVolume & JSXBase.HTMLAttributes<HTMLControlVolumeElement>;
             "input-typewriter": LocalJSX.InputTypewriter & JSXBase.HTMLAttributes<HTMLInputTypewriterElement>;

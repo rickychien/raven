@@ -8,6 +8,7 @@ import {
   EventEmitter,
 } from '@stencil/core'
 import IconUser from '../../assets/user.svg'
+import IconMicOn from '../../assets/mic-on.svg'
 import IconMicOff from '../../assets/mic-off.svg'
 
 @Component({
@@ -66,7 +67,7 @@ export class UserBubble {
           {this.isSpeakerMute ? (
             <div class="icon-mic-off" innerHTML={IconMicOff}></div>
           ) : (
-            <audio-wave stream={this.stream} />
+            <div class="icon-mic-on" innerHTML={IconMicOn}></div>
           )}
         </div>
         <input

@@ -1,8 +1,15 @@
+declare global {
+  interface Window {
+    AudioContext: typeof AudioContext
+    webkitAudioContext: typeof AudioContext
+  }
+}
+
 export default function onVolumeChange(
   stream: MediaStream,
   onEnterFrame: (volume: number) => void
 ): () => void {
-  let audioContext = new AudioContext()
+  let audioContext = new AudioContext() || new window.webkitAudioContext()
   let analyser: AnalyserNode = audioContext.createAnalyser()
   analyser.smoothingTimeConstant = 0.3
   analyser.fftSize = 1024
