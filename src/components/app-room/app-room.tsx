@@ -88,6 +88,7 @@ export class AppRoom {
       stream.getAudioTracks()[0].enabled = on
     })
     setUser(this.uid, { muteVolume: !on })
+    this.connector.sendUserUpdate({ muteVolume: !on })
   }
 
   onSpeakerOnChange = ({ detail: on }: CustomEvent) => {
