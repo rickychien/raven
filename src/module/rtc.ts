@@ -102,6 +102,7 @@ export default class RTC extends EventEmitter {
   }
 
   handleRemoteCandidate = (candidate: RTCIceCandidate) => {
+    if (!candidate.candidate) return
     this.peerConn.addIceCandidate(new RTCIceCandidate(candidate))
   }
 
