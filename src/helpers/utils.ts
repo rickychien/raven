@@ -16,9 +16,8 @@ export function log(msg: string, { type = 'Signaling' }: Option) {
       break
   }
   console.log(
-    '%c%s',
-    `color: white; background: ${bg}; border-radius: 3px; padding: 1px 5px;`,
-    type,
+    `%c${type}`,
+    `font-size: 10px; font-weight: 500; color: white; background: ${bg}; border-radius: 3px; padding:2px 4px;`,
     msg
   )
 }
