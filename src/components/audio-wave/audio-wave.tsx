@@ -16,7 +16,7 @@ export class AudioWave {
   }
 
   componentDidUnload = () => {
-    this.stop()
+    this.stop?.()
   }
 
   @Watch('stream')
