@@ -9,7 +9,8 @@ export default function onVolumeChange(
   stream: MediaStream,
   onEnterFrame: (volume: number) => void
 ): () => void {
-  let audioContext = new AudioContext() || new window.webkitAudioContext()
+  const ShimAudioContext = window.AudioContext || window.webkitAudioContext
+  let audioContext = new ShimAudioContext()
   let analyser: AnalyserNode = audioContext.createAnalyser()
   analyser.smoothingTimeConstant = 0.3
   analyser.fftSize = 1024
@@ -19,15 +20,14 @@ export default function onVolumeChange(
   let raf: number
 
   function getAverageVolume(array: Uint8Array) {
-    const length = array.length
     let values = 0
 
     // Get all the frequency amplitudes
-    for (let i = 0; i < length; i++) {
+    for (let i = 0; i < array.length; i++) {
       values += array[i]
     }
 
-    return values / length
+    return values / array.length
   }
 
   ;(function render() {
