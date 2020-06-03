@@ -12,8 +12,8 @@ export default function onVolumeChange(
   const ShimAudioContext = window.AudioContext || window.webkitAudioContext
   let audioContext = new ShimAudioContext()
   let analyser: AnalyserNode = audioContext.createAnalyser()
-  analyser.smoothingTimeConstant = 0.3
-  analyser.fftSize = 1024
+  analyser.smoothingTimeConstant = 0.5
+  analyser.fftSize = 2048
 
   let frequencyData = new Uint8Array(analyser.frequencyBinCount)
   let volume: number
